@@ -19,19 +19,17 @@ const StyledRedditIcon = styled(RedditOutlined)`
   font-size: 60px !important;
 `
 const StyledNavLink = styled(Link)`
-  color: #d6d6d6 !important;
+  font-size: 18px;
+  color: #d6d6d6 !important;  
   &:hover {
     color: #FFFF !important;
-  }
-  span {
-    font-size: 18px !important;
-  }
+  }  
 `
 
 const NavMenu: React.FC = () => {
 
   const location = useLocation();
-  
+
   return (
     <StyledHeader className="py-2 px-3">
       <div className="mw-1200 mx-auto d-flex align-items-center justify-content-between">
@@ -42,13 +40,12 @@ const NavMenu: React.FC = () => {
           </div>
           <nav>
             {CONTENT_PAGE_ROUTES.map((route, idx) => (
-              <StyledNavLink to={`/${route}`} key={idx}
+              <StyledNavLink to={`/${route.toLowerCase()}`} key={idx}
                 type="link"
                 className={cx({
-                  "p-0 m-0 mr-3 text-capitalize fs-18": true,
-                  "active-menu": location.pathname === `/${route}`
-                })}
-              >
+                  "p-0 m-0 mr-3 text-capitalize ": true,
+                  "active-menu": location.pathname.toLowerCase() === `/${route.toLowerCase()}`
+                })}>
                 {route}
               </StyledNavLink>
             ))}
