@@ -3,6 +3,7 @@ import axios from 'axios'
 
 import { IRedditResponse } from 'types/reddit'
 
+let isMounted = false;
 
 const useFetch = (url: string) => {
 
@@ -36,8 +37,9 @@ const useFetch = (url: string) => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(url);
-      console.log(response)
+      let source = axios.CancelToken.source();
+      const response = await axios.get(url, { cancelToken: source.token });
+      if (!isMounted) source.cancel();
       setPostsData(response.data);
       setPending(false);
     } catch (error) {
@@ -47,8 +49,12 @@ const useFetch = (url: string) => {
   }
 
   useEffect(() => {
+    isMounted = true;
     setPending(true);
     fetchData();
+    return () => {
+      isMounted = false;
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url])
 

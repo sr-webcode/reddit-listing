@@ -13,10 +13,17 @@ export interface IRedditData {
     id: string;
     url: string;
     score: number
+    body?: string;
     title: string;
     author: string;
+    is_video: boolean;
     permalink: string;
     thumbnail: string;
+    secure_media?: {
+      reddit_video: {
+        fallback_url: string;
+      }
+    }
     created_utc: number;
     num_comments: number;
     subreddit_name_prefixed: string

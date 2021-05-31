@@ -17,3 +17,9 @@ code {
 .mw-1200 {
   max-width: 1200px !important;
 }
+
+
+img {
+  display: block;
+  width: 100%;
+}

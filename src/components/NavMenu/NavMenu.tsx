@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 import cx from 'classnames'
 import { Link, useLocation } from 'react-router-dom'
-import { Typography, Avatar } from 'antd'
-import { RedditOutlined, UserOutlined } from '@ant-design/icons'
+import { Typography } from 'antd'
+import { RedditOutlined } from '@ant-design/icons'
 
 import { theme } from 'config/theme'
 import { CONTENT_PAGE_ROUTES } from 'config/routes'
@@ -51,9 +51,9 @@ const NavMenu: React.FC = () => {
             ))}
           </nav>
         </div>
-        <div>
+        {/* <div>
           <Avatar icon={<UserOutlined />} size={42} style={{ background: "#DDDD" }} />
-        </div>
+        </div> */}
       </div>
     </StyledHeader>
   )

@@ -1,15 +1,23 @@
+import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import moment from 'moment'
 import styled from 'styled-components'
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { List, Typography, Divider, Button, message } from 'antd'
+import { List, Typography, Divider, Button } from 'antd'
 import { CommentOutlined, ShareAltOutlined, CaretDownFilled, CaretUpFilled } from '@ant-design/icons'
 
 import useFetch from 'hooks/useFetch'
+import ContentModal from './components/ContentModal'
 import PageSpinner from 'components/PageSpinner'
+import CopyClipBoard from 'components/CopyClipBoard'
 import { theme } from 'config/theme'
 import { IRedditResponse } from 'types/reddit'
 
+interface IModalState {
+  visible: boolean;
+  redditLink: string;
+}
+
+const defaultModalState: IModalState = { redditLink: "", visible: false }
 const NO_IMG = 'assets/images/no-image.png'
 const { Title, Text } = Typography
 
@@ -31,6 +39,7 @@ const StyledThumbnail = styled.img`
 const ContentPage: React.FC = () => {
 
   const location = useLocation();
+  const [modalInfo, setModalInfo] = useState<IModalState>(defaultModalState)
   const { data, loading, fetchMoreLoading, fetchMore } = useFetch(`${process.env.REACT_APP_REDDIT_API_URL}${location.pathname}.json`)
   const redditData: IRedditResponse = data || { kind: "", data: { children: [], before: "", after: "" } };
 
@@ -53,7 +62,7 @@ const ContentPage: React.FC = () => {
             const thumbImg = thumbnail.includes('htt') ? thumbnail : NO_IMG;
 
             return (
-              <StyledListItem key={id}>
+              <StyledListItem key={id} onClick={() => setModalInfo({ redditLink: permalink, visible: true })}>
                 <div className="mw-1200 w-100 mx-auto px-3 d-flex align-items-center justify-content-between">
                   <div className="d-flex align-items-center">
                     <div className="mr-3 d-flex align-items-center">
@@ -70,27 +79,31 @@ const ContentPage: React.FC = () => {
                     <div>
                       <Title level={5} className="m-0 post-title">{title.length > 96 ? title.substr(0, 50) + "..." : title}</Title>
                       <Text type="secondary">
-                        submitted {timeAgo} ago by: <span className="font-weight-bold">{author}</span> on  <span className="font-weight-bold">{subreddit_name_prefixed}</span>
+                        Posted {timeAgo} ago by: <span className="font-weight-bold">{author}</span> on  <span className="font-weight-bold">{subreddit_name_prefixed}</span>
                       </Text>
                     </div>
                   </div>
                   <div className="d-flex align-items-center">
                     <Text type="secondary"><CommentOutlined className="mr-1" />{num_comments.toString()}</Text>
                     <Divider className="mx-3" type="vertical" />
-                    <CopyToClipboard text={`${process.env.REACT_APP_REDDIT_API_URL}${permalink}`} onCopy={() => {
-                      message.destroy();
-                      message.success("Link Copied!")
-                    }}>
+                    <CopyClipBoard text={`${process.env.REACT_APP_REDDIT_API_URL}${permalink}`}>
                       <Button
+                        onClick={(e) => e.stopPropagation()}
                         icon={<ShareAltOutlined />}>
                         Share
                     </Button>
-                    </CopyToClipboard>
+                    </CopyClipBoard>
                   </div>
                 </div>
               </StyledListItem>)
           }}
         />
+      )}
+      {Boolean(modalInfo.redditLink) && (
+        <ContentModal
+          redditLink={modalInfo.redditLink}
+          visible={modalInfo.visible}
+          onCancel={() => setModalInfo(defaultModalState)} />
       )}
       {after && <div className="d-flex justify-content-center">
         <Button
@@ -100,8 +113,7 @@ const ContentPage: React.FC = () => {
           className="w-100"
           type="primary"
           size="large"
-          onClick={() => fetchMore(before, after)}
-        >
+          onClick={() => fetchMore(before, after)}>
           Load More
         </Button>
       </div>}
